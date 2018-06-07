@@ -26,8 +26,8 @@ def stations(request):
 def get_station(request, pk):
     try:
         station = Station.objects.get(pk=pk)
-    except Station.DoesNotExist:
-        return HttpResponse(status=404)
+    except Station.DoesNotExist as e:
+        return HttpResponse(e, status=404)
 
     if request.method == 'GET':
         ser = StationSerializer(station)
@@ -44,3 +44,40 @@ def get_station(request, pk):
         station.delete()
         return HttpResponse(status=204)
 
+@csrf_exempt
+def packages(request):
+    if request.method == "GET":
+        packages = Package.objects.all()
+        ser = PackageSerializer(packages, many=True)
+        return JsonResponse(ser.data, safe=False)
+    elif request.method == 'POST':
+        data = JSONParser().parse(request)
+        ser = PackageSerializer(data=data)
+        if ser.is_valid():
+            ser.save()
+            return JsonResponse(ser.data, status=201)
+        else:
+            return JsonResponse(ser.data, status=400)
+    else:
+        return HttpResponse(500)
+
+def get_package(request, pk):
+    try:
+        pack = Package.objects.get(pk=pk)
+    except Package.DoesNotExist as e:
+        return HttpResponse(e, status=404)
+
+    if request.method == 'GET':
+        ser = PackageSerializer(pack)
+        return JsonResponse(ser.data)
+    elif request.method == 'POST':
+        data = JSONParser().parse(request)
+        ser = PackageSerializer(pack, data=data)
+        if ser.is_valid():
+            ser.save()
+            JsonResponse(ser.data)
+        else:
+            return JsonResponse(ser.errors, status=400)
+    elif request.method == 'DELETE':
+        pack.delete()
+        return HttpResponse(status=204)

@@ -5,6 +5,9 @@ from rest_framework.parsers import JSONParser
 from system.models import Station, Package
 from system.serializers import StationSerializer, PackageSerializer
 
+def index(request):
+    
+
 @csrf_exempt
 def stations(request):
     if request.method == 'GET':
@@ -27,7 +30,8 @@ def get_station(request, pk):
     try:
         station = Station.objects.get(pk=pk)
     except Station.DoesNotExist as e:
-        return HttpResponse(e, status=404)
+        print(e)
+        return HttpResponse(status=404)
 
     if request.method == 'GET':
         ser = StationSerializer(station)
@@ -65,7 +69,8 @@ def get_package(request, pk):
     try:
         pack = Package.objects.get(pk=pk)
     except Package.DoesNotExist as e:
-        return HttpResponse(e, status=404)
+        print(e)
+        return HttpResponse(status=404)
 
     if request.method == 'GET':
         ser = PackageSerializer(pack)

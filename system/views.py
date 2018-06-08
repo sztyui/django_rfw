@@ -1,12 +1,19 @@
 from django.http import HttpResponse, JsonResponse
+from django.template import loader
+from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
 from system.models import Station, Package
 from system.serializers import StationSerializer, PackageSerializer
 
+
 def index(request):
-    
+    if request.method == 'GET':
+        #index_page = loader.get_template("template/index.html")
+        return render(request, "system/index.html")
+    elif request.method == 'POST':
+        return HttpResponse(404)
 
 @csrf_exempt
 def stations(request):

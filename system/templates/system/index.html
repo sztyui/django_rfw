@@ -1,15 +1,23 @@
 <html>
 {% load static djng_tags %}
 <head>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-    <script src = "https://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.min.js"></script>
-
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
 </head>
 <body>
 <div class="jumbotron">
     <h1><jumbotron>Hello!</jumbotron></h1>
 </div>
+<style>
+.border-class
+{
+  border:thin black solid;
+  margin:auto;
+  border:1px solid gray;
+  padding:20px;
+}
+</style>
 <script>
 var app = angular.module('app', []);
 app.controller('stationsController', function($scope, $http) {
@@ -21,26 +29,61 @@ app.controller('stationsController', function($scope, $http) {
     }, function myError(response) {
         $scope.stations = response.statusText;
     });
-}); 
+});
+
+app.controller('stationAdd', function($scope, $http){
+    $scope.postFunc = function(){
+        var parameter = JSON.stringify({
+            "name": $scope.addName,
+            "weight": $scope.addWeight,
+            "price": $scope.addPrice
+        });
+        $scope.displayName = parameter;
+        $http.post('stations/', parameter).subscribe(
+            res => { console.log(res); },
+            err => { console.log(err); }
+            );
+    };
+
+});
 </script>
 <div class="container">
     {% load djng_tags %}
     {% verbatim %}
-    <div ng-app="app" ng-controller="stationsController">
-    <table class="table table-striped">
-        <tr>
-            <th>Order</th>
-            <th>Name</th>
-            <th>Weight</th>
-            <th>Station</th>
-        </tr>
-        <tr ng-repeat="station in stations">
-            <td>{{station.order}}</td>
-            <td>{{station.name}}</td>
-            <td>{{station.weight}}</td>
-            <td>{{station.price}}</td>
-        </tr>
-    </table>
+    <div ng-app="app">
+        
+        <div ng-controller="stationAdd">
+            <form ng-submit="postFunc()">
+            <div class="form-inline">
+                <label>Add record to DB | </label>
+                <label for="addName">Name</label>
+                <textarea class="form-control" id="addName" rows="1" ng-model="addName" name="addName"></textarea>
+                <label for="addWeight">Weight</label>
+                <textarea class="form-control" id="addWeight" rows="1" ng-model="addWeight" name="addWeight"></textarea>
+                <label for="addPrice">Price</label>
+                <textarea class="form-control" id="addPrice" rows="1" ng-model="addPrice" name="addPrice"></textarea>
+                <button type="submit" id="submit" class="btn btn-primary">Load</button>
+              </div>
+            </form>
+            <p>Entered | {{displayName}}</p>
+        </div>
+
+        <div ng-controller="stationsController">
+        <table class="table table-striped">
+            <tr>
+                <th>Order</th>
+                <th>Name</th>
+                <th>Weight</th>
+                <th>Station</th>
+            </tr>
+            <tr ng-repeat="station in stations | orderBy: 'order'">
+                <td>{{station.order}}</td>
+                <td>{{station.name}}</td>
+                <td>{{station.weight}}</td>
+                <td>{{station.price}}</td>
+            </tr>
+        </table>
+        </div>
     </div>
     {% endverbatim %}
 </div>

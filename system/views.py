@@ -10,10 +10,12 @@ from system.serializers import StationSerializer, PackageSerializer
 
 def index(request):
     if request.method == 'GET':
-        #index_page = loader.get_template("template/index.html")
         return render(request, "system/index.html")
-    elif request.method == 'POST':
-        return HttpResponse(404)
+    return HttpResponse(404)
+
+def try_angular(request):
+    if request.method == 'GET':
+        return render(request, "system/stations.html")
 
 @csrf_exempt
 def stations(request):

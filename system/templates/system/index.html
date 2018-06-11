@@ -1,54 +1,17 @@
+{% load djng_tags %}
 <html>
-{% load static djng_tags %}
 <head>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+    {% load static %} <script type="text/javascript" src="{% static 'javascripts/module.js' %}"></script>
+    <script type="text/javascript" src="{% static 'javascripts/module.controller.js' %}"></script>
 </head>
 <body>
-<div class="jumbotron">
-    <h1><jumbotron>Hello!</jumbotron></h1>
-</div>
-<style>
-.border-class
-{
-  border:thin black solid;
-  margin:auto;
-  border:1px solid gray;
-  padding:20px;
-}
-</style>
-<script>
-var app = angular.module('app', []);
-app.controller('stationsController', function($scope, $http) {
-    $http({
-        method : "GET",
-        url : "stations/"
-    }).then(function mySuccess(response) {
-        $scope.stations = response.data;
-    }, function myError(response) {
-        $scope.stations = response.statusText;
-    });
-});
-
-app.controller('stationAdd', function($scope, $http){
-    $scope.postFunc = function(){
-        var parameter = JSON.stringify({
-            "name": $scope.addName,
-            "weight": $scope.addWeight,
-            "price": $scope.addPrice
-        });
-        $scope.displayName = parameter;
-        $http.post('stations/', parameter).subscribe(
-            res => { console.log(res); },
-            err => { console.log(err); }
-            );
-    };
-
-});
-</script>
 <div class="container">
-    {% load djng_tags %}
+    <div class="jumbotron">
+        <h1><jumbotron>Hello!</jumbotron></h1>
+    </div>
     {% verbatim %}
     <div ng-app="app">
         
@@ -65,7 +28,6 @@ app.controller('stationAdd', function($scope, $http){
                 <button type="submit" id="submit" class="btn btn-primary">Load</button>
               </div>
             </form>
-            <p>Entered | {{displayName}}</p>
         </div>
 
         <div ng-controller="stationsController">

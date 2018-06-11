@@ -7,5 +7,5 @@ urlpatterns = [
     url(r'^get_station/(?P<pk>[0-9]+)/$', views.get_station),
     url(r'^packages/$', views.packages),
     url(r'^get_package/(?P<pk>[0-9]+)/$', views.get_package),
-    url(r'^try/$', views.try_angular)
+    url(r'^count_stations/$', views.count_stations)
 ]

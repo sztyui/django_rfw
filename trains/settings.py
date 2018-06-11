@@ -126,4 +126,3 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = (
   os.path.join(os.path.dirname(os.path.realpath(__file__)), 'static/'),
 )
-print(STATICFILES_DIRS)

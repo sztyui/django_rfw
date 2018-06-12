@@ -25,7 +25,7 @@
           <th>rm</th>
           <th>vim</th>
         </tr>
-        <tr ng-repeat="x in names;" ng-attr-class="{{ x.weight > package.weight && package.calculated && 'success' || 'error' }}">
+            <tr ng-repeat="x in names | orderBy : 'order'" ng-attr-class="{{ x.weight > package.weight && package.calculated && 'success' || 'error' }}">
             <td>{{$index + 1}}</td>
         	<td>{{x.name}}</td>
             <td>{{x.weight}}</td>

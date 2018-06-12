@@ -12,70 +12,74 @@
 {% verbatim %}
 <body>
 <div class="container">
-<div class="page-header"><h2>Valami webszerver</h2></div>
-<div ng-app="myApp" ng-controller="myCtrl">
-	<table class="table table-striped">
-    	<tr>
-          <th>#</th>
-          <th>Name</th>
-          <th>Weight</th>
-          <th>Price</th>
-          <th>Order</th>
-          <th ng-if="package.calculated">Pay</th>
-          <th>rm</th>
-          <th>vim</th>
-        </tr>
-            <tr ng-repeat="x in names | orderBy : 'order'" ng-attr-class="{{ x.weight > package.weight && package.calculated && 'success' || 'error' }}">
-            <td>{{$index + 1}}</td>
-        	<td>{{x.name}}</td>
-            <td>{{x.weight}}</td>
-            <td>{{x.price}}</td>
-            <td>{{x.order}}</td>
-            <td ng-if="package.calculated">{{ x.hasToPay || ''}}</td>
-            <td><button type="button" class="btn btn-danger" ng-click="remove(x.id)"><span class="glyphicon glyphicon-remove"></span></button></td>
-			<td><button type="button" class="btn btn-success" ng-click="loads(x.id)"><span class="glyphicon glyphicon-pencil"></span></button></td>
-        </tr>
-    </table>
-    <div class="container">
-      <form class="form-inline">
-        <h3>Package</h3>
-        <table class="table">
-        <tr>
-        <td><label for="packageWeight">Weight</label></td>
-        <td><input name="packageWeight" type="number" ng-model="package.weight"></td>
-        <td><button type="button" class="btn btn-primary" ng-click="priceCalc()"><span class="glyphicon glyphicon-euro"></span> Calculate</button></td>
-        <td><button type="button" class="btn btn-primary" ng-click="clearPackage()"><span class="glyphicon glyphicon-repeat"></span> Clear</button></td>
-        </tr>
-        </table>
-      </form>
-    </div>
-    <div class="container">
-    <h3>Editor</h3>
-    <form class="form-inline">
-    	<table class="table">
-        	<tr>
-          		<td><label for="modifyOrder">Order</label></td>
-          		<td><input name="modifyOrder" type="integer" ng-model="element.order"></td>
-          	</tr>
-        	<tr>
-          		<td><label for="modifyName">Name</label></td>
-          		<td><input name="modifyName" type="text" ng-model="element.name"></td>
-          	</tr>
+    <div class="page-header"><h2>Valami webszerver</h2></div>
+    <div ng-app="myApp" ng-controller="myCtrl">
+        <table class="table table-striped">
             <tr>
-          		<td><label for="modifyWeight">Weight</label></td>
-          		<td><input name="modifyWeight" type="text" ng-model="element.weight"></td>
-          	</tr>
-            <tr>
-          		<td><label for="modifyPrice">Price</label></td>
-          		<td><input name="modifyPrice" type="integer" ng-model="element.price"></td>
-          	</tr>
+              <th>#</th>
+              <th>Name</th>
+              <th>Weight</th>
+              <th>Price</th>
+              <th>Order</th>
+              <th ng-if="package.calculated">Pay</th>
+              <th>rm</th>
+              <th>vim</th>
+            </tr>
+                <tr ng-repeat="x in names | orderBy : orderAttribute" ng-attr-class="{{ x.weight > package.weight && package.calculated && 'success' || 'error' }}">
+                <td>{{$index + 1}}</td>
+                <td>{{x.name}}</td>
+                <td>{{x.weight}}</td>
+                <td>{{x.price}}</td>
+                <td>{{x.order}}</td>
+                <td ng-if="package.calculated">{{ x.hasToPay || ''}}</td>
+                <td><button type="button" class="btn btn-danger" ng-click="remove(x.id)"><span class="glyphicon glyphicon-remove"></span></button></td>
+                <td><button type="button" class="btn btn-success" ng-click="loads(x.id)"><span class="glyphicon glyphicon-pencil"></span></button></td>
+            </tr>
         </table>
-        <button type="button" class="btn btn-primary" ng-click="clearInput()"><span class="glyphicon glyphicon-repeat"></span> Clear</button>
-        <button type="button" class="btn btn-primary" ng-click="addToTable()"><span class="glyphicon glyphicon-plus"></span> Add</button>
-        <button type="button" class="btn btn-primary" ng-click="modify()"><span class="glyphicon glyphicon-pencil"></span> Modify</button>
-    </form>
+        <div class="container">
+          <form class="form-inline">
+            <h3>Package</h3>
+            <table class="table">
+            <tr>
+            <td><label for="packageWeight">Weight</label></td>
+            <td><input name="packageWeight" type="number" ng-model="package.weight"></td>
+            <td><button type="button" class="btn btn-primary" ng-click="priceCalc()"><span class="glyphicon glyphicon-euro"></span> Calculate</button></td>
+            <td><button type="button" class="btn btn-primary" ng-click="clearPackage()"><span class="glyphicon glyphicon-repeat"></span> Clear</button></td>
+            </tr>
+            </table>
+          </form>
+        </div>
+        <div class="container">
+        <h3>Editor</h3>
+        <form class="form-inline">
+            <table class="table">
+                <tr>
+                    <td><label for="modifyOrder">Order</label></td>
+                    <td><input name="modifyOrder" type="integer" ng-model="element.order"></td>
+                </tr>
+                <tr>
+                    <td><label for="modifyName">Name</label></td>
+                    <td><input name="modifyName" type="text" ng-model="element.name"></td>
+                </tr>
+                <tr>
+                    <td><label for="modifyWeight">Weight</label></td>
+                    <td><input name="modifyWeight" type="text" ng-model="element.weight"></td>
+                </tr>
+                <tr>
+                    <td><label for="modifyPrice">Price</label></td>
+                    <td><input name="modifyPrice" type="integer" ng-model="element.price"></td>
+                </tr>
+                <tr>
+
+                </tr>
+            </table>
+            <button type="button" class="btn btn-primary" ng-click="clearInput()"><span class="glyphicon glyphicon-repeat"></span> Clear</button>
+            <button type="button" class="btn btn-primary" ng-click="addToTable()"><span class="glyphicon glyphicon-plus"></span> Add</button>
+            <button type="button" class="btn btn-primary" ng-click="modify()"><span class="glyphicon glyphicon-pencil"></span> Modify</button>
+        </form>
+        </div>
     </div>
-</div>
+    </br>
 </div>
 {% endverbatim %}
     {% load static %}

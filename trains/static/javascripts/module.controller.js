@@ -1,4 +1,42 @@
-app.controller('myCtrl', function($scope, $http) {
+app.factory('gtc', function($http){
+    var myService = {
+        getTableData: function(){
+            return $http.get('stations/');
+        }
+    };
+    return myService;
+});
+
+app.factory('add', function($http){
+    var myService = {
+        loadStation: function(parameter){
+            return $http.post('stations/', JSON.stringify(parameter));
+        }
+    };
+    return myService;
+});
+
+app.factory('del', function($http){
+    var myService = {
+        deleteStation: function(index){
+            return $http.delete('get_station/' + index + '/');
+        }
+    };
+    return myService;
+});
+
+app.factory('modif', function($http){
+    var myService = {
+        modifyStation: function(elem){
+            var tmp = angular.copy(elem);
+            delete tmp['id'];
+    	    return $http.post('get_station/' + elem.id + '/', JSON.stringify(tmp));
+        }
+    };
+    return myService;
+});
+
+app.controller('myCtrl', function(gtc, add, del, modif, $scope) {
    // egy TMP elem
     $scope.element = {
       id: null,
@@ -14,26 +52,30 @@ app.controller('myCtrl', function($scope, $http) {
       weight: null
     };
 
-    // Tabla az adatok tarolasahoz.
     $scope.names = null;
+    // Tabla az adatok tarolasahoz.
+    $scope.refreshNames = function(){
+        dataStream = gtc.getTableData();
+        dataStream.then(
+            function(result){
+                $scope.names = result.data;
+            },
+            function(result){
+                console.log(result.data);
+            }
+    )};
 
-   $scope.refreshNames = function (){
-      $http.get('stations/')
-      .then(
-      function(response){
-        $scope.names = response.data;
-      },
-      function(response){
-        console.log(response.data);
-      }
-      );
-   };
+    $scope.orderAttribute = "order";
 
    $scope.refreshNames();
 
     $scope.remove = function(index){
-        $http.delete('get_station/' + index);
-    	$scope.refreshNames();
+        del.deleteStation(index).then(
+            function(response){
+                $scope.refreshNames();
+            },
+            function(response){}
+        );
     };
 
     $scope.loads = function(index){
@@ -47,11 +89,7 @@ app.controller('myCtrl', function($scope, $http) {
 
     $scope.modify = function(){
         if($scope.element.id){
-            console.log($scope.element);
-            var tmp = angular.copy($scope.element);
-            delete tmp['id'];
-            console.log($scope.element.id);
-    	    $http.post('get_station/' + $scope.element.id + '/', JSON.stringify(tmp)).then(
+            modif.modifyStation($scope.element).then(
                 function(response){
                     $scope.refreshNames();
                 },
@@ -71,9 +109,10 @@ app.controller('myCtrl', function($scope, $http) {
                 weight: parseInt($scope.element.weight),
                 price: parseInt($scope.element.price)
             };
-            $http.post('stations/', JSON.stringify(tmp)).then(
+            add.loadStation(tmp).then(
                 function(response){
                     $scope.refreshNames();
+                    console.log(response.data);
                 },
                 function(response){
                     console.log(response.data);
@@ -99,6 +138,7 @@ app.controller('myCtrl', function($scope, $http) {
           value.hasToPay = parseInt($scope.package.weight) * value.price;
       });
       $scope.package.calculated = true;
+      $scope.orderAttribute = ['hasToPay' ,'order'];
     };
 
     $scope.clearPackage = function(){

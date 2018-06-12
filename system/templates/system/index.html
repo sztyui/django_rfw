@@ -1,86 +1,85 @@
+<!DOCTYPE html>
 {% load djng_tags %}
 <html>
 <head>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'stylesheets/index.css' %}">
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
-    {% load static %} <script type="text/javascript" src="{% static 'javascripts/module.js' %}"></script>
-    <script type="text/javascript" src="{% static 'javascripts/module.controller.js' %}"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 </head>
+{% verbatim %}
 <body>
 <div class="container">
-    <div class="jumbotron">
-        <jumbotron><h2>Hello!</h2></jumbotron>
-    </div>
-    {% verbatim %}
-    <div ng-app="app">
-
-        <div ng-controller="stationAdd">
-            <form ng-submit="postFunc()">
-            <div class="form-inline">
-                <p class="text-primary">Add record to DB | </p>
-                <label for="addName">Name</label>
-                <textarea class="form-control" id="addName" rows="1" ng-model="addName" name="addName"></textarea>
-                <label for="addWeight">Weight</label>
-                <textarea class="form-control" id="addWeight" rows="1" ng-model="addWeight" name="addWeight"></textarea>
-                <label for="addPrice">Price</label>
-                <textarea class="form-control" id="addPrice" rows="1" ng-model="addPrice" name="addPrice"></textarea>
-                <button type="submit" id="submit" class="btn btn-primary">Load</button>
-              </div>
-            </form>
-        </div>
-
-        <div ng-controller="stationDelete">
-            <form ng-submit="deleteFunc()">
-                <div class="form-inline">
-                    <p class="text-primary">Record to delete | </p>
-                    <label>Order | </label>
-                    <select ng-model="del.model">
-                      <option ng-repeat="c in del.availableOptions.numbers" value="{{c}}" ng-model="delRowNumber" name="delRowNumber">{{c}}</option>
-                    </select>
-                    <button type="submit" id="submit" class="btn btn-primary">Delete</button>
-                </div>
-            </form>
-        </div>
-
-        <div ng-controller="stationModify">
-            <form ng-submit="modifyFunction()">
-                <div class="form-inline">
-                    <p class="text-primary">Record to Modify | </p>
-                    <label>Modify | </label>
-                    <select ng-model="modif.model" ng-change="selectedRow()">
-                      <option ng-repeat="c in modif.availableOptions.numbers" value="{{c}}" ng-model="modifyRowNumber" name="modifyRowNumber">{{c}}</option>
-                    </select>
-                    <label for="modifName">Name</label>
-                    <textarea class="form-control" id="addName" rows="1" ng-model="modif.data.name" name="modifName">{{modif.data.name}}</textarea>
-                    <label for="modifWeight">Weight</label>
-                    <textarea class="form-control" id="addWeight" rows="1" ng-model="modif.data.weight" name="modifWeight">{{modif.data.weight}}</textarea>
-                    <label for="modifPrice">Price</label>
-                    <textarea class="form-control" id="addPrice" rows="1" ng-model="modif.data.price" name="addPrice">{{modif.data.price}}</textarea>
-                    <button type="submit" id="submit" class="btn btn-primary">Modify</button>
-                </div>
-                {{modif.data}}
-            </form>
-        </div>
-
-        <div ng-controller="stationsController">
-        <table class="table table-striped">
-            <tr>
-                <th>Order</th>
-                <th>Name</th>
-                <th>Weight</th>
-                <th>Station</th>
-            </tr>
-            <tr ng-repeat="station in stations | orderBy: 'order'">
-                <td>{{station.order}}</td>
-                <td>{{station.name}}</td>
-                <td>{{station.weight}}</td>
-                <td>{{station.price}}</td>
-            </tr>
+<div class="page-header"><h2>Valami webszerver</h2></div>
+<div ng-app="myApp" ng-controller="myCtrl">
+	<table class="table table-striped">
+    	<tr>
+          <th>#</th>
+          <th>Name</th>
+          <th>Weight</th>
+          <th>Price</th>
+          <th>Order</th>
+          <th ng-if="package.calculated">Pay</th>
+          <th>rm</th>
+          <th>vim</th>
+        </tr>
+        <tr ng-repeat="x in names;" ng-attr-class="{{ x.weight > package.weight && package.calculated && 'success' || 'error' }}">
+            <td>{{$index + 1}}</td>
+        	<td>{{x.name}}</td>
+            <td>{{x.weight}}</td>
+            <td>{{x.price}}</td>
+            <td>{{x.order}}</td>
+            <td ng-if="package.calculated">{{ x.hasToPay || ''}}</td>
+            <td><button type="button" class="btn btn-danger" ng-click="remove(x.id)"><span class="glyphicon glyphicon-remove"></span></button></td>
+			<td><button type="button" class="btn btn-success" ng-click="loads(x.id)"><span class="glyphicon glyphicon-pencil"></span></button></td>
+        </tr>
+    </table>
+    <div class="container">
+      <form class="form-inline">
+        <h3>Package</h3>
+        <table class="table">
+        <tr>
+        <td><label for="packageWeight">Weight</label></td>
+        <td><input name="packageWeight" type="number" ng-model="package.weight"></td>
+        <td><button type="button" class="btn btn-primary" ng-click="priceCalc()"><span class="glyphicon glyphicon-euro"></span> Calculate</button></td>
+        <td><button type="button" class="btn btn-primary" ng-click="clearPackage()"><span class="glyphicon glyphicon-repeat"></span> Clear</button></td>
+        </tr>
         </table>
-        </div>
+      </form>
     </div>
-    {% endverbatim %}
+    <div class="container">
+    <h3>Editor</h3>
+    <form class="form-inline">
+    	<table class="table">
+        	<tr>
+          		<td><label for="modifyOrder">Order</label></td>
+          		<td><input name="modifyOrder" type="integer" ng-model="element.order"></td>
+          	</tr>
+        	<tr>
+          		<td><label for="modifyName">Name</label></td>
+          		<td><input name="modifyName" type="text" ng-model="element.name"></td>
+          	</tr>
+            <tr>
+          		<td><label for="modifyWeight">Weight</label></td>
+          		<td><input name="modifyWeight" type="text" ng-model="element.weight"></td>
+          	</tr>
+            <tr>
+          		<td><label for="modifyPrice">Price</label></td>
+          		<td><input name="modifyPrice" type="integer" ng-model="element.price"></td>
+          	</tr>
+        </table>
+        <button type="button" class="btn btn-primary" ng-click="clearInput()"><span class="glyphicon glyphicon-repeat"></span> Clear</button>
+        <button type="button" class="btn btn-primary" ng-click="addToTable()"><span class="glyphicon glyphicon-plus"></span> Add</button>
+        <button type="button" class="btn btn-primary" ng-click="modify()"><span class="glyphicon glyphicon-pencil"></span> Modify</button>
+    </form>
+    </div>
 </div>
+</div>
+{% endverbatim %}
+    {% load static %}
+    <script type="text/javascript" src="{% static 'javascripts/module.js' %}"></script>
+    <script type="text/javascript" src="{% static 'javascripts/module.controller.js' %}"></script>
 </body>
 </html>

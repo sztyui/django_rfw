@@ -1,70 +1,111 @@
-
-app.controller('stationsController', function($scope, $http) {
-    $http({
-        method : "GET",
-        url : "stations/"
-    }).then(function mySuccess(response) {
-        $scope.stations = response.data;
-    }, function myError(response) {
-        $scope.stations = response.statusText;
-    });
-});
-
-app.controller('stationAdd', function($scope, $http){
-    $scope.postFunc = function(){
-        var parameter = JSON.stringify({
-            "name": $scope.addName,
-            "weight": $scope.addWeight,
-            "price": $scope.addPrice
-        });
-        $http.post('stations/', parameter).subscribe(
-            res => { console.log(res); },
-            err => { console.log(err); }
-            );
+app.controller('myCtrl', function($scope, $http) {
+   // egy TMP elem
+    $scope.element = {
+      id: null,
+      order: null,
+      name: null,
+      weight: null,
+      price: null,
+      hasToPay: null
     };
 
-});
-
-app.controller('stationDelete', function($scope, $http){
-   $scope.del ={
-        model: null,
-        availableOptions: null
-   };
-
-   $http.get("count_stations/")
-   .then(function(response){
-        $scope.del.availableOptions = response.data;
-   });
-
-   $scope.deleteFunc = function(){
-        $http.delete('get_station/' + $scope.del.model).subscribe(
-            res => { console.log(res); },
-            err => { console.log(err); }
-        );
-   };
-});
-
-app.controller('stationModify', function($scope, $http){
-    $scope.modif= {
-        model: null,
-        availableOptions: null,
-        data: null
+    $scope.package = {
+      calculated: false,
+      weight: null
     };
 
-   $http.get("count_stations/")
-   .then(function(response){
-        $scope.modif.availableOptions = response.data;
-   });
-   $scope.selectedRow = function(){
-        http.get('get_station/' + $scope.modif.model).then(function(response){
-            $scope.modif.data = response.data;
-        });
+    // Tabla az adatok tarolasahoz.
+    $scope.names = null;
+
+   $scope.refreshNames = function (){
+      $http.get('stations/')
+      .then(
+      function(response){
+        $scope.names = response.data;
+      },
+      function(response){
+        console.log(response.data);
+      }
+      );
    };
 
-   $scope.modifyFunction = function(){
-        $http.post('get_station/', $scope.modif.data).subscribe(
-            res => { console.log(res); },
-            err => { console.log(err); }
+   $scope.refreshNames();
+
+    $scope.remove = function(index){
+        $http.delete('get_station/' + index);
+    	$scope.refreshNames();
+    };
+
+    $scope.loads = function(index){
+        angular.forEach($scope.names, function(value){
+            if (value.id == index){
+                $scope.element = angular.copy(value);
+                delete $scope.element['created'];
+            }
+        });
+    };
+
+    $scope.modify = function(){
+        if($scope.element.id){
+            console.log($scope.element);
+            var tmp = angular.copy($scope.element);
+            delete tmp['id'];
+            console.log($scope.element.id);
+    	    $http.post('get_station/' + $scope.element.id + '/', JSON.stringify(tmp)).then(
+                function(response){
+                    $scope.refreshNames();
+                },
+                function(response){
+                    $scope.refreshNames();
+                    console.log(response.data);
+                }
+    	    );
+    	}
+    	refreshNames();
+    };
+
+    $scope.addToTable = function(){
+    		var tmp = {
+                order: parseInt($scope.element.order),
+                name: $scope.element.name,
+                weight: parseInt($scope.element.weight),
+                price: parseInt($scope.element.price)
+            };
+            $http.post('stations/', JSON.stringify(tmp)).then(
+                function(response){
+                    $scope.refreshNames();
+                },
+                function(response){
+                    console.log(response.data);
+                }
             );
-   };
+
+    };
+
+    $scope.clearInput = function(){
+        $scope.element = {
+          id: null,
+          order: null,
+          name: null,
+          weight:  null,
+          price: null,
+          hasToPay: null
+        };
+    };
+
+    $scope.priceCalc = function(){
+      angular.forEach($scope.names, function(value, key){
+        if($scope.package.weight)
+          value.hasToPay = parseInt($scope.package.weight) * value.price;
+      });
+      $scope.package.calculated = true;
+    };
+
+    $scope.clearPackage = function(){
+      var tmp = {
+        calculated: false,
+        weight: null
+      };
+      $scope.package = angular.copy(tmp);
+    };
 });

@@ -1,0 +1,42 @@
+body {
+  font-family: arial;
+}
+
+h1,code, .test {
+  font-family: monospace;
+}
+
+.test {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #eeeeee;
+  cursor: pointer;
+  text-align: center;
+}
+
+.test.toggled {
+  background-color: #88ff88;
+  font-weight: bold;
+}
+
+.case {
+  padding: 20px;
+  border: 1px solid #f0f0f0;
+  margin-bottom: 20px;
+}
+.case.ng-enter {
+  -webkit-transition: 1s linear all; /* Chrome */
+	transition: 1s linear all;
+	opacity: 0;
+}
+.case.ng-enter.ng-enter-active {
+  opacity: 1;
+}
+
+.table tbody tr > td.success {
+  background-color: #dff0d8 !important;
+}
+
+.table tbody tr > td.error {
+  background-color: #f2dddd !important;
+}
